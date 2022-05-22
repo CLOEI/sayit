@@ -1,23 +1,36 @@
-import React, { useRef } from 'react'
+import React from 'react'
 import insertFormat from './utils/insertFormat'
 
 function Body() {
   const bodyChangeHandler = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    e.target.style.height = 'auto'
     e.target.style.height = e.target.scrollHeight + 'px'
   }
+
   const bodyKeyHandler = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    const target = document.querySelector(
+      'textarea[name="body"]'
+    ) as HTMLTextAreaElement
+
     if (e.ctrlKey) {
       switch (e.key) {
         case 'b':
-          insertFormat('**')
+          insertFormat(target, '**')
           break
         case 'i':
-          insertFormat('__')
+          insertFormat(target, '__')
           break
         case 'k':
           e.preventDefault()
-          insertFormat('[](', 'url', ')')
+          insertFormat(target, '[](', 'url', ')')
           break
+        case 'u':
+          e.preventDefault()
+          insertFormat(target, '<u>', ' ', '</u>')
+          break
+        case 's':
+          e.preventDefault()
+          insertFormat(target, '~~')
         default:
           break
       }

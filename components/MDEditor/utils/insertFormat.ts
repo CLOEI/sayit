@@ -1,17 +1,17 @@
 const insertFormat = (
+  target: HTMLTextAreaElement,
   text: string,
   dfText: string = ' ',
   text2: string = ''
 ) => {
-  const body = document.querySelector(
-    'textarea[name="body"]'
-  ) as HTMLTextAreaElement
-  const selectionStart = body.selectionStart
-  const selectionEnd = body.selectionEnd
+  if (!target.selectionStart) return
 
-  let start = body.value.substring(0, selectionStart)
-  let middle = body.value.substring(selectionStart, selectionEnd)
-  let end = body.value.substring(selectionEnd)
+  const selectionStart = target.selectionStart
+  const selectionEnd = target.selectionEnd
+
+  let start = target.value.substring(0, selectionStart)
+  let middle = target.value.substring(selectionStart, selectionEnd)
+  let end = target.value.substring(selectionEnd)
   let mode = 0
 
   if (text2 === '') {
@@ -42,27 +42,27 @@ const insertFormat = (
       mode = 3
     }
   }
-  body.value = start + text + middle + text2 + end
+  target.value = start + text + middle + text2 + end
   switch (mode) {
     case 0:
-      body.selectionStart = selectionStart + textLen
-      body.selectionEnd = selectionEnd + textLen
+      target.selectionStart = selectionStart + textLen
+      target.selectionEnd = selectionEnd + textLen
       break
     case 1:
-      body.selectionStart = selectionStart + textLen
-      body.selectionEnd = body.selectionStart + middle.length
+      target.selectionStart = selectionStart + textLen
+      target.selectionEnd = target.selectionStart + middle.length
       break
     case 2:
-      body.selectionStart = selectionStart - textLen
-      body.selectionEnd = selectionEnd - text2Len
+      target.selectionStart = selectionStart - textLen
+      target.selectionEnd = selectionEnd - text2Len
       break
     case 3:
-      body.selectionStart = selectionStart
-      body.selectionEnd = selectionEnd - text2Len
+      target.selectionStart = selectionStart
+      target.selectionEnd = selectionEnd - text2Len
     default:
       break
   }
-  body.focus()
+  target.focus()
 }
 
 export default insertFormat

@@ -1,9 +1,17 @@
-import { useState } from 'react'
-
 import Head from 'next/head'
 import MDEditor from '../components/MDEditor'
 
+import { useAuth } from '../hooks/useAuth'
+import { useRouter } from 'next/router'
+
 function New() {
+  const router = useRouter()
+  const auth = useAuth()
+
+  if (!auth.user) {
+    router.replace('/enter')
+  }
+
   return (
     <div>
       <Head>

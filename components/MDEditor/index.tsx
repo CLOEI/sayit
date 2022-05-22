@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React from 'react'
 import supabase from '../../supabase'
 import { useAuth } from '../../hooks/useAuth'
 
@@ -6,7 +6,16 @@ import Title from './Title'
 import Toolbox from './Toolbox'
 import Body from './Body'
 
+import { useRouter } from 'next/router'
+
+type Posts = {
+  title: string
+  body: string
+  user_id: string
+}
+
 function Index() {
+  const router = useRouter()
   const auth = useAuth()
 
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -14,22 +23,20 @@ function Index() {
     const title = (e.target as any).title.value
     const body = (e.target as any).body.value
 
-    type Posts = {
-      title: string
-      body: string
-      user_id: string
+    if (auth.user) {
+      await supabase.from<Posts>('posts').insert({
+        title,
+        body,
+        user_id: auth.user.id,
+      })
+    } else {
+      router.push('/enter')
     }
-
-    await supabase.from<Posts>('posts').insert({
-      title,
-      body,
-      user_id: auth.user?.id,
-    })
     ;(e.target as HTMLFormElement).reset()
   }
 
   return (
-    <form className="space-y-4" onSubmit={onSubmit}>
+    <form className="w-full space-y-4" onSubmit={onSubmit}>
       <div className="bg-white">
         <div className="p-4">
           <Title />
@@ -39,6 +46,7 @@ function Index() {
           <Body />
         </div>
       </div>
+      <p className="text-xs">Note: you can write your own markdown.</p>
       <button
         className="rounded-md bg-blue-700 px-4 py-2 text-white"
         type="submit"
