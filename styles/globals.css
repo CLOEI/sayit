@@ -1,3 +1,15 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-gray-200;
+  }
+}
+
+@layer components {
+  .md-icon {
+    @apply rounded-md p-2 hover:bg-blue-400 hover:text-blue-100;
+  }
+}
