@@ -11,7 +11,7 @@ function Navbar() {
   const auth = useAuth()
 
   return (
-    <nav className="sticky top-0 flex w-full items-center justify-between bg-white p-2 shadow-sm">
+    <nav className="sticky top-0 z-10 flex w-full items-center justify-between bg-white p-2 shadow-sm">
       <div className="flex items-center">
         <button onClick={() => router.push('/')}>
           <h1 className="rounded-sm border-2 border-black p-1 text-2xl font-bold">

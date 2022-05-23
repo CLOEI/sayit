@@ -18,7 +18,7 @@ function Body() {
           insertFormat(target, '**')
           break
         case 'i':
-          insertFormat(target, '__')
+          insertFormat(target, '*')
           break
         case 'k':
           e.preventDefault()

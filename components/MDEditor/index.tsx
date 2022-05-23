@@ -8,12 +8,6 @@ import Body from './Body'
 
 import { useRouter } from 'next/router'
 
-type Posts = {
-  title: string
-  body: string
-  user_id: string
-}
-
 function Index() {
   const router = useRouter()
   const auth = useAuth()
@@ -24,7 +18,7 @@ function Index() {
     const body = (e.target as any).body.value
 
     if (auth.user) {
-      await supabase.from<Posts>('posts').insert({
+      await supabase.from<Post>('posts').insert({
         title,
         body,
         user_id: auth.user.id,
