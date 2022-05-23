@@ -18,7 +18,7 @@ function Index() {
     const body = (e.target as any).body.value
 
     if (auth.user) {
-      await supabase.from<Post>('posts').insert({
+      await supabase.from<Posts>('posts').insert({
         title,
         body,
         user_id: auth.user.id,

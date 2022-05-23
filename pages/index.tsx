@@ -10,18 +10,17 @@ import supabase from '../supabase'
 
 const Home: NextPage = () => {
   const auth = useAuth()
-  const [posts, setPosts] = useState<Post[]>([])
+  const [posts, setPosts] = useState<Posts[]>([])
 
   useEffect(() => {
     ;(async () => {
       const { data, error } = await supabase
-        .from<Post>('posts')
+        .from<Posts>('posts')
         .select('*')
         .order('id', { ascending: false })
       if (error) {
         throw error
       }
-      console.log(data)
       setPosts(data)
     })()
   }, [])

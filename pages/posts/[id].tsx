@@ -11,7 +11,7 @@ import { useAuth } from '../../hooks/useAuth'
 import CommentCard from '../../components/CommentCard'
 
 type Props = {
-  data: Post
+  data: Posts
 }
 type FormData = {
   reply: string
@@ -49,14 +49,10 @@ function Index({ data }: Props) {
 
   const onSubmit = handleSubmit(async (formData) => {
     if (auth.user) {
-      const { name, avatar_url } = auth.user.user_metadata
-
       const { data: dbData, error } = await supabase
         .from<Comments>('comments')
         .insert({
-          comment: formData.reply,
-          author_name: name,
-          author_profile: avatar_url,
+          content: formData.reply,
           post_id: data.id,
           user_id: auth.user.id,
         })

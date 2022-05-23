@@ -5,17 +5,18 @@ import Link from 'next/link'
 import { useRouter } from 'next/router'
 import PostHeader from './PostHeader'
 
-function PostCard(data: Post) {
+function PostCard(props: Posts) {
   const router = useRouter()
-  const comments = () => router.push(`/posts/${data.id}#comments`)
+
+  const comments = () => router.push(`/posts/${props.id}#comments`)
 
   return (
     <div className="w-full space-y-4 bg-white px-4 pt-4 pb-3 shadow-sm">
-      <PostHeader {...data} />
+      <PostHeader user_id={props.user_id} created_at={props.created_at} />
       <div>
         <h2>
-          <Link href={`/posts/${data.id}`}>
-            <a className="text-xl font-bold">{data.title}</a>
+          <Link href={`/posts/${props.id}`}>
+            <a className="text-xl font-bold">{props.title}</a>
           </Link>
         </h2>
       </div>
