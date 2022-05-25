@@ -3,7 +3,7 @@ import React, { useContext, useState, useEffect, createContext } from 'react'
 import supabase from '../supabase'
 
 type AuthProviderProps = {
-  children: React.ReactNode
+  children: any
 }
 
 type AuthContextValue = {

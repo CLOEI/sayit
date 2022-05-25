@@ -1,8 +1,6 @@
 import type { NextPage } from 'next'
 import Head from 'next/head'
-import Image from 'next/image'
 import { useEffect, useState } from 'react'
-import Navbar from '../components/Navbar'
 import PostCard from '../components/PostCard'
 
 import { useAuth } from '../hooks/useAuth'
@@ -15,15 +13,14 @@ const Home: NextPage = () => {
   useEffect(() => {
     ;(async () => {
       const { data, error } = await supabase
-        .from<Posts>('posts')
-        .select('*')
+        .rpc('get_posts')
         .order('id', { ascending: false })
-      if (error) {
-        throw error
-      }
+      if (error) throw error
       setPosts(data)
     })()
   }, [])
+
+  console.log(posts)
 
   return (
     <div className="mx-auto max-w-5xl">

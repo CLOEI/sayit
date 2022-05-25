@@ -1,46 +1,42 @@
 import React, { useState, useEffect } from 'react'
+import { AiOutlineMore } from 'react-icons/ai'
 import TimeAgo from 'react-timeago'
 
 import supabase from '../supabase'
+import { useAuth } from '../hooks/useAuth'
 
-type Props = {
-  user_id: string
-  created_at: string
-}
+function PostHeader({ avatar_url, name, id, created_at }: Posts) {
+  const auth = useAuth()
 
-function PostHeader({ user_id, created_at }: Props) {
-  const [data, setData] = useState<Profile | null>(null)
-
-  useEffect(() => {
-    ;(async () => {
-      const { data: dbData, error } = await supabase
-        .from<Profile>('profiles')
-        .select('name, avatar_url')
-        .eq('id', user_id)
-        .single()
-
+  const handleDelete = async () => {
+    if (auth.user) {
+      const { error } = await supabase.from('posts').delete().eq('id', id)
       if (error) throw error
-      setData(dbData)
-    })()
-  }, [])
+    }
+  }
 
   return (
-    <div className="flex items-center space-x-2">
-      <div className="relative h-8 w-8 flex-shrink-0 overflow-hidden rounded-full bg-gray-200">
-        {data && (
+    <div className="flex items-center justify-between">
+      <div className="flex items-center space-x-2">
+        <div className="relative h-8 w-8 flex-shrink-0 overflow-hidden rounded-full bg-gray-200">
           <img
             src={
-              data.avatar_url ||
-              `https://avatars.dicebear.com/api/adventurer/${data.name}.svg`
+              avatar_url ||
+              `https://avatars.dicebear.com/api/adventurer/${name}.svg`
             }
           />
-        )}
+        </div>
+        <div className="flex flex-col">
+          <p className="text-sm">{name}</p>
+          <p className="text-xs">
+            <TimeAgo date={created_at} />
+          </p>
+        </div>
       </div>
-      <div className="flex flex-col">
-        <p className="text-sm">{data ? data.name : ''}</p>
-        <p className="text-xs">
-          <TimeAgo date={created_at} />
-        </p>
+      <div>
+        <button onClick={handleDelete}>
+          <AiOutlineMore className="text-gray-500" size={24} />
+        </button>
       </div>
     </div>
   )

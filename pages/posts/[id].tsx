@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import { useForm } from 'react-hook-form'
+import { toast } from 'react-hot-toast'
 
 import Head from 'next/head'
 import supabase from '../../supabase'
@@ -29,35 +30,47 @@ function Index({ data }: Props) {
   const auth = useAuth()
 
   useEffect(() => {
-    ;(async () => {
-      const { data: dbData, error } = await supabase
-        .from<Comments>('comments')
-        .select('*')
-        .eq('post_id', data.id)
-        .order('created_at', { ascending: false })
-
-      if (error) throw error
-      setComments(dbData)
-    })()
+    fetchComments()
   }, [])
 
   useEffect(() => {
     reset({
       reply: '',
     })
+    if (isSubmitSuccessful) {
+      toast.promise(fetchComments(), {
+        loading: 'Sending reply...',
+        success: 'Reply sent!',
+        error: 'Error sending reply',
+      })
+    }
   }, [isSubmitSuccessful])
+
+  const fetchComments = async () => {
+    const { data: dbData, error } = await supabase
+      .rpc<Comments>('get_comments_with_profile')
+      .eq('post_id', data.id)
+      .order('created_at', { ascending: false })
+
+    if (error) throw error
+    setComments(dbData)
+  }
+
+  const checkAuth = (e: React.MouseEvent<HTMLTextAreaElement>) => {
+    if (!auth.user) {
+      toast.error('You must be logged in to comment')
+      e.preventDefault()
+    }
+  }
 
   const onSubmit = handleSubmit(async (formData) => {
     if (auth.user) {
-      const { data: dbData, error } = await supabase
-        .from<Comments>('comments')
-        .insert({
-          content: formData.reply,
-          post_id: data.id,
-          user_id: auth.user.id,
-        })
+      const { error } = await supabase.from<Comments>('comments').insert({
+        content: formData.reply,
+        post_id: data.id,
+        user_id: auth.user.id,
+      })
       if (error) throw error
-      setComments((prev) => [dbData[0], ...prev])
     }
   })
 
@@ -72,7 +85,9 @@ function Index({ data }: Props) {
       </div>
       <ReactMarkdown children={data.body} remarkPlugins={[remarkGfm]} />
       <div className="mt-3">
-        <h2 className="mb-6 text-xl font-bold">Discussion</h2>
+        <h2 className="mb-6 text-xl font-bold">
+          Discussion ({data.comment_count || 0})
+        </h2>
         <form onSubmit={onSubmit} className="flex space-x-2">
           <div className="h-6 w-6 flex-shrink-0 overflow-hidden rounded-full">
             <img
@@ -84,6 +99,7 @@ function Index({ data }: Props) {
           </div>
           <div className="w-full">
             <textarea
+              onClick={checkAuth}
               className="w-full resize-none rounded-md border-2 border-gray-200 p-2"
               placeholder="Send a reply"
               {...register('reply', { required: true })}
@@ -100,7 +116,14 @@ function Index({ data }: Props) {
         <div className="mt-4 space-y-1">
           {comments.length > 0 &&
             comments.map((comment) => {
-              return <CommentCard key={comment.id} {...comment} />
+              return (
+                <CommentCard
+                  key={comment.id}
+                  refresh={fetchComments}
+                  isReplies={false}
+                  {...comment}
+                />
+              )
             })}
         </div>
       </div>
@@ -111,8 +134,7 @@ function Index({ data }: Props) {
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
   const query = ctx.query
   const { data, error } = await supabase
-    .from('posts')
-    .select('*')
+    .rpc('get_posts')
     .eq('id', query.id)
     .single()
 
