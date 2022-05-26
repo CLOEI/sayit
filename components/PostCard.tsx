@@ -9,7 +9,7 @@ function PostCard(props: Posts) {
   const router = useRouter()
   // normal human reading speed is 200-250 words per minute sc: google
   const wpm = 200
-  const estimated = props.body.match(/[a-zA-Z]/g)!.length / wpm
+  const estimated = props.body.match(/[a-zA-Z0-9]/g)!.length / wpm
   const minutes = Math.round(estimated)
 
   const comments = () => router.push(`/posts/${props.id}#comments`)

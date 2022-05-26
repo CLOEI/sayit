@@ -1,19 +1,27 @@
 import React, { useState, useEffect } from 'react'
 import { AiOutlineMore } from 'react-icons/ai'
 import TimeAgo from 'react-timeago'
+import { BsTrashFill, BsPencilFill } from 'react-icons/bs'
 
 import supabase from '../supabase'
 import { useAuth } from '../hooks/useAuth'
+import { toast } from 'react-hot-toast'
+import { useRouter } from 'next/router'
 
-function PostHeader({ avatar_url, name, id, created_at }: Posts) {
+function PostHeader({ avatar_url, name, id, created_at, user_id }: Posts) {
+  const [menu, setMenu] = useState(false)
+  const router = useRouter()
   const auth = useAuth()
 
-  const handleDelete = async () => {
+  const deletePost = async () => {
     if (auth.user) {
       const { error } = await supabase.from('posts').delete().eq('id', id)
-      if (error) throw error
+      if (error) toast.error('Error deleting post')
+      router.push('/')
     }
   }
+
+  const toggleMenu = () => setMenu(!menu)
 
   return (
     <div className="flex items-center justify-between">
@@ -33,10 +41,27 @@ function PostHeader({ avatar_url, name, id, created_at }: Posts) {
           </p>
         </div>
       </div>
-      <div>
-        <button onClick={handleDelete}>
-          <AiOutlineMore className="text-gray-500" size={24} />
-        </button>
+      <div className="relative">
+        {auth?.user?.id === user_id && (
+          <button onClick={toggleMenu}>
+            <AiOutlineMore className="text-gray-500" size={24} />
+          </button>
+        )}
+        {menu && (
+          <div className="absolute bottom-0 right-0 w-48 translate-y-full rounded-md border-2 border-blue-500 bg-white p-2 text-gray-700 shadow-sm">
+            <button
+              onClick={deletePost}
+              className="flex w-full items-center space-x-2 rounded-md py-3 px-1 hover:bg-gray-100"
+            >
+              <BsTrashFill />
+              <span>Delete post</span>
+            </button>
+            <button className="flex w-full items-center space-x-2 py-3 px-1 hover:bg-gray-100">
+              <BsPencilFill />
+              <span>Edit post</span>
+            </button>
+          </div>
+        )}
       </div>
     </div>
   )

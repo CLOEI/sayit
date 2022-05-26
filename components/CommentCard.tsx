@@ -28,26 +28,39 @@ function CommentCard(props: Props) {
     reset({
       reply: '',
     })
-    if (isSubmitSuccessful) {
-      toggleReply()
-      toast.promise(props.refresh(), {
-        loading: 'Sending reply...',
-        success: 'Reply sent!',
-        error: 'Error sending reply',
-      })
-    }
   }, [isSubmitSuccessful])
 
-  const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+  const handleReply = (e: React.MouseEvent<HTMLButtonElement>) => {
     if (auth.user) {
       toggleReply()
     } else {
       toast.error('You must be logged in to reply')
     }
   }
+  const handleDelete = async (e: React.MouseEvent<HTMLButtonElement>) => {
+    if (auth?.user?.id === props.user_id) {
+      const toastId = toast.loading('Deleting comment...')
+      const { error } = await supabase
+        .from('comments')
+        .delete()
+        .eq('id', props.id)
+
+      if (error) {
+        return toast.error('Error deleting comment', {
+          id: toastId,
+        })
+      } else {
+        toast.success('Comment deleted', {
+          id: toastId,
+        })
+        props.refresh()
+      }
+    }
+  }
   const toggleReply = () => setReply(!reply)
   const onSubmit = handleSubmit(async (formData) => {
     if (auth.user) {
+      const toastId = toast.loading('Sending reply...')
       const { error } = await supabase.from<Comments>('comments').insert({
         content: formData.reply,
         post_id: props.post_id,
@@ -55,7 +68,16 @@ function CommentCard(props: Props) {
         reply_to: props.author_name,
         parent_id: props.isReplies ? props.parent_id : props.id,
       })
-      if (error) throw error
+      if (error) {
+        return toast.error('Error sending reply', {
+          id: toastId,
+        })
+      } else {
+        toast.success('Reply sent', {
+          id: toastId,
+        })
+        props.refresh()
+      }
     }
   })
 
@@ -91,9 +113,19 @@ function CommentCard(props: Props) {
         </div>
         <div>
           {!reply && (
-            <button onClick={handleClick} className="px-2 py-1 text-gray-500">
-              Reply
-            </button>
+            <>
+              <button onClick={handleReply} className="px-2 py-1 text-gray-500">
+                Reply
+              </button>
+              {auth?.user?.id === props.user_id && (
+                <button
+                  onClick={handleDelete}
+                  className="px-2 py-1 text-gray-500"
+                >
+                  Delete
+                </button>
+              )}
+            </>
           )}
           {reply && (
             <form onSubmit={onSubmit} className="mt-3">

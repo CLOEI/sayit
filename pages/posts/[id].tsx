@@ -9,6 +9,7 @@ import Head from 'next/head'
 import supabase from '../../supabase'
 import PostHeader from '../../components/PostHeader'
 import { useAuth } from '../../hooks/useAuth'
+import { useRouter } from 'next/router'
 import CommentCard from '../../components/CommentCard'
 
 type Props = {
@@ -27,6 +28,7 @@ function Index({ data }: Props) {
     reset,
   } = useForm<FormData>()
   const [comments, setComments] = useState<Comments[]>([])
+  const router = useRouter()
   const auth = useAuth()
 
   useEffect(() => {
@@ -59,18 +61,29 @@ function Index({ data }: Props) {
   const checkAuth = (e: React.MouseEvent<HTMLTextAreaElement>) => {
     if (!auth.user) {
       toast.error('You must be logged in to comment')
-      e.preventDefault()
+      router.push('/enter')
     }
   }
 
   const onSubmit = handleSubmit(async (formData) => {
     if (auth.user) {
+      const toastId = toast.loading('Sending comment...')
       const { error } = await supabase.from<Comments>('comments').insert({
         content: formData.reply,
         post_id: data.id,
         user_id: auth.user.id,
       })
-      if (error) throw error
+
+      if (error) {
+        return toast.error('Error sending comment', {
+          id: toastId,
+        })
+      } else {
+        toast.success('Comment sent', {
+          id: toastId,
+        })
+        fetchComments()
+      }
     }
   })
 
