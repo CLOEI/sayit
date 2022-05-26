@@ -26,10 +26,6 @@ function PostCard(props: Posts) {
       </div>
       <div className="flex justify-between">
         <div className="flex space-x-5">
-          <button className="disabled flex items-center space-x-1">
-            <AiOutlineHeart className="text-red-500" size={24} />
-            <span>0</span>
-          </button>
           <button onClick={comments} className="flex items-center space-x-1">
             <AiOutlineComment className="text-gray-500" size={24} />
             <span>{props.comment_count || 0}</span>

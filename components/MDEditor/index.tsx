@@ -1,6 +1,7 @@
 import React from 'react'
 import supabase from '../../supabase'
 import { useAuth } from '../../hooks/useAuth'
+import { toast } from 'react-hot-toast'
 
 import Title from './Title'
 import Toolbox from './Toolbox'
@@ -8,36 +9,24 @@ import Body from './Body'
 
 import { useRouter } from 'next/router'
 
-function Index() {
+type Props = {
+  onSubmit: (e: React.FormEvent<HTMLFormElement>) => Promise<string | undefined>
+  value?: Posts
+}
+
+function Index({ onSubmit, value }: Props) {
   const router = useRouter()
   const auth = useAuth()
-
-  const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
-    const title = (e.target as any).title.value
-    const body = (e.target as any).body.value
-
-    if (auth.user) {
-      await supabase.from<Posts>('posts').insert({
-        title,
-        body,
-        user_id: auth.user.id,
-      })
-    } else {
-      router.push('/enter')
-    }
-    ;(e.target as HTMLFormElement).reset()
-  }
 
   return (
     <form className="w-full space-y-4" onSubmit={onSubmit}>
       <div className="bg-white">
         <div className="p-4">
-          <Title />
+          <Title title={value?.title} />
         </div>
         <Toolbox />
         <div className="p-4">
-          <Body />
+          <Body body={value?.body} />
         </div>
       </div>
       <p className="text-xs">Note: you can write your own markdown.</p>

@@ -1,8 +1,10 @@
 import Head from 'next/head'
 import MDEditor from '../components/MDEditor'
+import { toast } from 'react-hot-toast'
 
 import { useAuth } from '../hooks/useAuth'
 import { useRouter } from 'next/router'
+import supabase from '../supabase'
 
 function New() {
   const router = useRouter()
@@ -10,6 +12,34 @@ function New() {
 
   if (!auth.user) {
     router.replace('/enter')
+  }
+
+  const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    const title = (e.target as any).title.value
+    const body = (e.target as any).body.value
+
+    if (auth.user) {
+      const toastId = toast.loading('Adding post...')
+      const { error } = await supabase.from<Posts>('posts').insert({
+        title,
+        body,
+        user_id: auth.user.id,
+      })
+      if (error) {
+        return toast.error('Something went wrong', {
+          id: toastId,
+        })
+      } else {
+        toast.success('Post added!', {
+          id: toastId,
+        })
+        router.push('/')
+      }
+    } else {
+      router.push('/enter')
+    }
+    ;(e.target as HTMLFormElement).reset()
   }
 
   return (
@@ -21,7 +51,7 @@ function New() {
       <button className="cursor-not-allowed p-2 opacity-[38%]" disabled>
         Preview
       </button>
-      <MDEditor />
+      <MDEditor onSubmit={onSubmit} />
     </div>
   )
 }

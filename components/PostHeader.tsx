@@ -21,6 +21,7 @@ function PostHeader({ avatar_url, name, id, created_at, user_id }: Posts) {
     }
   }
 
+  const editPost = () => router.push(`/edit/${id}`)
   const toggleMenu = () => setMenu(!menu)
 
   return (
@@ -56,7 +57,10 @@ function PostHeader({ avatar_url, name, id, created_at, user_id }: Posts) {
               <BsTrashFill />
               <span>Delete post</span>
             </button>
-            <button className="flex w-full items-center space-x-2 py-3 px-1 hover:bg-gray-100">
+            <button
+              onClick={editPost}
+              className="flex w-full items-center space-x-2 py-3 px-1 hover:bg-gray-100"
+            >
               <BsPencilFill />
               <span>Edit post</span>
             </button>

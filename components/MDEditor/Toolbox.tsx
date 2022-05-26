@@ -31,7 +31,6 @@ function Toolbox() {
       }
       if (data) {
         insertFormat(
-          target,
           '![Image description](',
           `https://gcvuinboilazvaioqsxy.supabase.co/storage/v1/object/public/${data.Key}`,
           ')'
@@ -41,16 +40,12 @@ function Toolbox() {
   }
 
   const tool = (() => {
-    const target = document.querySelector(
-      'textarea[name="body"]'
-    ) as HTMLTextAreaElement
-
     return {
-      bold: () => insertFormat(target, '**'),
-      italic: () => insertFormat(target, '__'),
-      link: () => insertFormat(target, '[](', 'url', ')'),
-      underline: () => insertFormat(target, '<u>', ' ', '</u>'),
-      strikethrough: () => insertFormat(target, '~~'),
+      bold: () => insertFormat('**'),
+      italic: () => insertFormat('__'),
+      link: () => insertFormat('[](', 'url', ')'),
+      underline: () => insertFormat('<u>', ' ', '</u>'),
+      strikethrough: () => insertFormat('~~'),
     }
   })()
 

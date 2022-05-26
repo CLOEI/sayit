@@ -1,36 +1,32 @@
 import React from 'react'
 import insertFormat from './utils/insertFormat'
 
-function Body() {
+function Body({ body }: { body?: string }) {
   const bodyChangeHandler = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     e.target.style.height = 'auto'
     e.target.style.height = e.target.scrollHeight + 'px'
   }
 
   const bodyKeyHandler = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    const target = document.querySelector(
-      'textarea[name="body"]'
-    ) as HTMLTextAreaElement
-
     if (e.ctrlKey) {
       switch (e.key) {
         case 'b':
-          insertFormat(target, '**')
+          insertFormat('**')
           break
         case 'i':
-          insertFormat(target, '*')
+          insertFormat('*')
           break
         case 'k':
           e.preventDefault()
-          insertFormat(target, '[](', 'url', ')')
+          insertFormat('[](', 'url', ')')
           break
         case 'u':
           e.preventDefault()
-          insertFormat(target, '<u>', ' ', '</u>')
+          insertFormat('<u>', ' ', '</u>')
           break
         case 's':
           e.preventDefault()
-          insertFormat(target, '~~')
+          insertFormat('~~')
         default:
           break
       }
@@ -41,6 +37,7 @@ function Body() {
     <textarea
       className="w-full resize-none bg-transparent outline-none"
       placeholder="Write content body here..."
+      defaultValue={body}
       onChange={bodyChangeHandler}
       onKeyDown={bodyKeyHandler}
       name="body"

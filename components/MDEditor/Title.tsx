@@ -1,6 +1,7 @@
 import React from 'react'
 
-function Title() {
+function Title({ title }: { title?: string }) {
+  console.log(title)
   const titleKeyHandler = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === 'Enter') {
       e.preventDefault()
@@ -17,6 +18,7 @@ function Title() {
       className="w-full resize-none bg-transparent text-4xl font-bold outline-none"
       autoComplete="off"
       placeholder="New post title here..."
+      defaultValue={title}
       onChange={titleChangeHandler}
       onKeyDown={titleKeyHandler}
       name="title"

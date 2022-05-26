@@ -1,11 +1,11 @@
 const insertFormat = (
-  target: HTMLTextAreaElement,
   text: string,
   dfText: string = ' ',
   text2: string = ''
 ) => {
-  if (!target.selectionStart) return
-
+  const target = document.querySelector(
+    'textarea[name="body"]'
+  ) as HTMLTextAreaElement
   const selectionStart = target.selectionStart
   const selectionEnd = target.selectionEnd
 
