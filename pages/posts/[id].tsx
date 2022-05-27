@@ -28,7 +28,7 @@ function Index({ data }: Props) {
     formState: { isSubmitSuccessful },
     reset,
   } = useForm<FormData>()
-  const [comments, setComments] = useState<Comments[]>([])
+  const [comments, setComments] = useState<Comments[] | null>([])
   const router = useRouter()
   const auth = useAuth()
 
@@ -135,7 +135,8 @@ function Index({ data }: Props) {
           </div>
         </form>
         <div className="mt-4 space-y-1">
-          {comments.length > 0 &&
+          {comments &&
+            comments.length > 0 &&
             comments.map((comment) => {
               return (
                 <CommentCard
@@ -155,8 +156,8 @@ function Index({ data }: Props) {
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
   const query = ctx.query
   const { data, error } = await supabase
-    .rpc<Posts>('get_posts')
-    .eq('id', query.id as string)
+    .rpc('get_posts')
+    .eq('id', query.id)
     .single()
 
   if (error) throw error

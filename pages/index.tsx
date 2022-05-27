@@ -8,12 +8,12 @@ import supabase from '../supabase'
 
 const Home: NextPage = () => {
   const auth = useAuth()
-  const [posts, setPosts] = useState<Posts[]>([])
+  const [posts, setPosts] = useState<Posts[] | null>([])
 
   useEffect(() => {
     ;(async () => {
       const { data, error } = await supabase
-        .rpc<Posts>('get_posts')
+        .rpc('get_posts')
         .order('id', { ascending: false })
       if (error) throw error
       setPosts(data)
@@ -28,7 +28,8 @@ const Home: NextPage = () => {
         <title>Sayit - Say what in your mind</title>
       </Head>
       <div className="mt-5 space-y-2">
-        {posts.length > 0 &&
+        {posts &&
+          posts.length > 0 &&
           posts.map((post) => {
             return <PostCard key={post.id} {...post} />
           })}
