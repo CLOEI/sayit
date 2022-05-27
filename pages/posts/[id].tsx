@@ -11,6 +11,7 @@ import PostHeader from '../../components/PostHeader'
 import { useAuth } from '../../hooks/useAuth'
 import { useRouter } from 'next/router'
 import CommentCard from '../../components/CommentCard'
+import ReactTimeago from 'react-timeago'
 
 type Props = {
   data: Posts
@@ -97,6 +98,13 @@ function Index({ data }: Props) {
         <h1 className="text-3xl font-bold">{data.title}</h1>
       </div>
       <ReactMarkdown children={data.body} remarkPlugins={[remarkGfm]} />
+      {data.updated_at && (
+        <div className="ml-auto w-max py-2">
+          <p className="text-gray-500">
+            Updated <ReactTimeago date={data.updated_at} />
+          </p>
+        </div>
+      )}
       <div className="mt-3">
         <h2 className="mb-6 text-xl font-bold">
           Discussion ({data.comment_count || 0})

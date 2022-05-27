@@ -7,6 +7,7 @@ type Posts = {
   comment_count: number
   name: string
   avatar_url: string
+  updated_at: string | null
 }
 interface Comments {
   id: number

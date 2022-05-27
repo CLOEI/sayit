@@ -41,6 +41,7 @@ function Index({ data }: Props) {
         router.push('/')
       }
     } else {
+      toast.error('Unauthorized access')
       router.push('/enter')
     }
     ;(e.target as HTMLFormElement).reset()
