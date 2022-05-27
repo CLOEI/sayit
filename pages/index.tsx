@@ -13,7 +13,7 @@ const Home: NextPage = () => {
   useEffect(() => {
     ;(async () => {
       const { data, error } = await supabase
-        .rpc('get_posts')
+        .rpc<Posts>('get_posts')
         .order('id', { ascending: false })
       if (error) throw error
       setPosts(data)

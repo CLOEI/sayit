@@ -63,8 +63,8 @@ function Index({ data }: Props) {
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
   const query = ctx.query
   const { data, error } = await supabase
-    .rpc('get_posts')
-    .eq('id', query.id)
+    .rpc<Posts>('get_posts')
+    .eq('id', query.id as string)
     .single()
 
   if (error) throw error
