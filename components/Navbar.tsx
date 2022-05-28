@@ -1,84 +1,71 @@
-import React, { useState } from 'react'
-import { AiOutlinePlus, AiOutlineSearch } from 'react-icons/ai'
-import { FiLogOut } from 'react-icons/fi'
+import {
+	Button,
+	HStack,
+	Heading,
+	IconButton,
+	ButtonGroup,
+	Menu,
+	MenuButton,
+	Avatar,
+	MenuList,
+	MenuItem,
+	Box,
+	Flex,
+	Spacer,
+} from '@chakra-ui/react';
+import { AiOutlinePlus, AiOutlineSearch } from 'react-icons/ai';
+import { FiLogOut } from 'react-icons/fi';
 
-import { useRouter } from 'next/router'
-import { useAuth } from '../hooks/useAuth'
+import { useRouter } from 'next/router';
 
-import Image from 'next/image'
+import { useAuth } from '../hooks/useAuth';
 
-function Navbar() {
-  const [menu, setMenu] = useState(false)
-  const router = useRouter()
-  const auth = useAuth()
+function Navbar(): JSX.Element {
+	const router = useRouter();
+	const auth = useAuth();
 
-  const toggleMenu = () => setMenu(!menu)
-  const logout = () => {
-    auth.signOut()
-    toggleMenu()
-  }
+	const gotoHome = () => router.push('/');
+	const gotoEnter = () => router.push('/enter');
 
-  return (
-    <nav className="sticky top-0 z-10 flex w-full items-center justify-between bg-white p-2 shadow-sm">
-      <div className="flex items-center">
-        <button onClick={() => router.push('/')}>
-          <h1 className="rounded-sm border-2 border-black p-1 text-2xl font-bold">
-            Sayit
-          </h1>
-        </button>
-        <div className="ml-5 hidden items-center rounded-md bg-gray-100 p-2 ring-blue-200 hover:bg-white hover:ring-2 sm:flex">
-          <AiOutlineSearch className="text-gray-400" />
-          <input
-            type="text"
-            placeholder="Search..."
-            className="bg-transparent pl-2 outline-none"
-            autoComplete="off"
-          />
-        </div>
-      </div>
-      {auth.user ? (
-        <div className="flex space-x-2">
-          <button
-            onClick={() => router.push('/new')}
-            className="flex items-center space-x-1 rounded-md border-2 border-blue-500 p-2 text-blue-500 hover:bg-blue-500 hover:text-white"
-          >
-            <AiOutlinePlus />
-            <span className="hidden sm:inline">Create a post</span>
-          </button>
-          <div
-            onClick={toggleMenu}
-            className="relative h-10 w-10 cursor-pointer overflow-hidden rounded-full"
-          >
-            <Image
-              src={auth.user.user_metadata.avatar_url}
-              layout="fill"
-              objectFit="contain"
-            />
-          </div>
-        </div>
-      ) : (
-        <div>
-          <button
-            onClick={() => router.push('/enter')}
-            className="rounded-md border-2 border-blue-500 p-2 text-blue-500 hover:bg-blue-500 hover:text-white"
-          >
-            Create account
-          </button>
-        </div>
-      )}
-      {menu && (
-        <div className="absolute bottom-0 right-0 w-48 translate-y-full rounded-md border-2 border-blue-500 bg-white p-2 text-gray-700 shadow-sm">
-          <button
-            onClick={logout}
-            className="flex w-full items-center space-x-2 rounded-md py-3 px-1 hover:bg-gray-100"
-          >
-            <FiLogOut />
-            <span>Logout</span>
-          </button>
-        </div>
-      )}
-    </nav>
-  )
+	return (
+		<HStack
+			as="nav"
+			pos="sticky"
+			top="0"
+			zIndex={10}
+			bg="white"
+			p={2}
+			boxShadow="sm"
+			justifyContent="space-between"
+		>
+			<Heading onClick={gotoHome} as="h1" cursor="pointer">
+				Sayit
+			</Heading>
+			{auth.user ? (
+				<Flex alignItems="center">
+					<ButtonGroup colorScheme="whatsapp" spacing="1">
+						<IconButton aria-label="Add post" icon={<AiOutlineSearch />} />
+						<IconButton aria-label="Add post" icon={<AiOutlinePlus />} />
+					</ButtonGroup>
+					<Spacer w="2" />
+					<Menu>
+						<MenuButton
+							as={Avatar}
+							name={auth.user.user_metadata.name}
+							src={auth.user.user_metadata.avatar_url}
+						/>
+						<MenuList>
+							<MenuItem onClick={() => auth.signOut()} icon={<FiLogOut />}>
+								Logout
+							</MenuItem>
+						</MenuList>
+					</Menu>
+				</Flex>
+			) : (
+				<Button onClick={gotoEnter}>Create account</Button>
+			)}
+		</HStack>
+	);
 }
 
-export default Navbar
+export default Navbar;

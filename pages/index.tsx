@@ -1,41 +1,41 @@
-import type { NextPage } from 'next'
-import Head from 'next/head'
-import { useEffect, useState } from 'react'
-import PostCard from '../components/PostCard'
+import type { NextPage } from 'next';
 
-import { useAuth } from '../hooks/useAuth'
-import supabase from '../supabase'
+import { useEffect, useState } from 'react';
+import { VStack } from '@chakra-ui/react';
+import Layout from '../components/Layout';
+
+import Head from 'next/head';
+
+import PostCard from '../components/PostCard';
+import supabase from '../supabase';
 
 const Home: NextPage = () => {
-  const auth = useAuth()
-  const [posts, setPosts] = useState<Posts[] | null>([])
+	const [posts, setPosts] = useState<Post[] | null>(null);
 
-  useEffect(() => {
-    ;(async () => {
-      const { data, error } = await supabase
-        .rpc('get_posts')
-        .order('id', { ascending: false })
-      if (error) throw error
-      setPosts(data)
-    })()
-  }, [])
+	useEffect(() => {
+		(async () => {
+			const { data, error } = await supabase
+				.rpc<Post>('get_posts')
+				.order('id', { ascending: false });
 
-  console.log(posts)
+			if (error) throw error;
+			setPosts(data);
+		})();
+	}, []);
 
-  return (
-    <div className="mx-auto max-w-5xl">
-      <Head>
-        <title>Sayit - Say what in your mind</title>
-      </Head>
-      <div className="mt-5 space-y-2">
-        {posts &&
-          posts.length > 0 &&
-          posts.map((post) => {
-            return <PostCard key={post.id} {...post} />
-          })}
-      </div>
-    </div>
-  )
-}
+	return (
+		<Layout>
+			<Head>
+				<title>Sayit</title>
+			</Head>
+			<VStack spacing="2" mt="2">
+				{posts &&
+					posts.map((post) => {
+						return <PostCard key={post.id} {...post} />;
+					})}
+			</VStack>
+		</Layout>
+	);
+};
 
-export default Home
+export default Home;

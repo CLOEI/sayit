@@ -1,42 +1,51 @@
-import React from 'react'
-import { AiOutlineHeart, AiFillHeart, AiOutlineComment } from 'react-icons/ai'
+import React from 'react';
+import { AiOutlineComment } from 'react-icons/ai';
 
-import Link from 'next/link'
-import { useRouter } from 'next/router'
-import PostHeader from './PostHeader'
+import { useRouter } from 'next/router';
+import Link from 'next/link';
 
-function PostCard(props: Posts) {
-  const router = useRouter()
-  // normal human reading speed is 200-250 words per minute sc: google
-  const wpm = 200
-  const estimated = props.body.match(/[a-zA-Z0-9]/g)!.length / wpm
-  const minutes = Math.round(estimated)
+import PostHeader from './PostHeader';
+import { Button, ButtonGroup, HStack, Text, VStack } from '@chakra-ui/react';
 
-  const comments = () => router.push(`/posts/${props.id}#comments`)
+function PostCard(props: Post) {
+	const router = useRouter();
+	const wpm = 200; // normal human reading speed
+	const estimated = props.body.match(/[a-zA-Z0-9]/g)!.length / wpm;
+	const minutes = Math.round(estimated);
 
-  return (
-    <div className="w-full space-y-4 bg-white px-4 pt-4 pb-3 shadow-sm">
-      <PostHeader {...props} />
-      <div>
-        <h2>
-          <Link href={`/posts/${props.id}`}>
-            <a className="text-xl font-bold">{props.title}</a>
-          </Link>
-        </h2>
-      </div>
-      <div className="flex justify-between">
-        <div className="flex space-x-5">
-          <button onClick={comments} className="flex items-center space-x-1">
-            <AiOutlineComment className="text-gray-500" size={24} />
-            <span>{props.comment_count || 0}</span>
-          </button>
-        </div>
-        <p className="text-gray-500">
-          {minutes < 1 ? 'a couple of secs' : `${minutes} min read`}
-        </p>
-      </div>
-    </div>
-  )
+	const gotoComments = () => router.push(`/post/${props.id}#comments`);
+
+	return (
+		<VStack
+			bg="white"
+			px="4"
+			pt="4"
+			pb="3"
+			w="full"
+			boxShadow="sm"
+			spacing="4"
+			alignItems="flex-start"
+		>
+			<PostHeader {...props} />
+			<div>
+				<Text as="h2">
+					<Link href={`/posts/${props.id}`} passHref>
+						<Text as="a" fontSize="xl" fontWeight="bold">
+							{props.title}
+						</Text>
+					</Link>
+				</Text>
+			</div>
+			<HStack justifyContent="space-between" w="full">
+				<ButtonGroup variant="outline">
+					<Button onClick={gotoComments} leftIcon={<AiOutlineComment />}>
+						<span>{props.comment_count || 0}</span>
+					</Button>
+				</ButtonGroup>
+				<Text>{minutes < 1 ? 'a couple of secs' : `${minutes} min read`}</Text>
+			</HStack>
+		</VStack>
+	);
 }
 
-export default PostCard
+export default PostCard;
