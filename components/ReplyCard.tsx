@@ -36,7 +36,7 @@ function ReplyCard(props: Props) {
 	const {
 		register,
 		handleSubmit,
-		resetField,
+		reset,
 		formState: { isSubmitting, isSubmitSuccessful },
 	} = useForm<FormData>();
 	const { isOpen, onOpen, onClose } = useDisclosure();
@@ -45,9 +45,11 @@ function ReplyCard(props: Props) {
 	const auth = useAuth();
 
 	useEffect(() => {
-		resetField('reply');
+		reset({
+			reply: '',
+		});
 		setIsReplyToggled(false);
-	}, [isSubmitSuccessful, resetField]);
+	}, [isSubmitSuccessful, reset]);
 
 	const handleDelete = async (e: React.MouseEvent<HTMLButtonElement>) => {
 		if (auth.user?.id === props.user_id) {
@@ -91,6 +93,8 @@ function ReplyCard(props: Props) {
 				});
 				props.refresh();
 			}
+		} else {
+			toast.error('You must be logged in to reply');
 		}
 	});
 
@@ -136,7 +140,10 @@ function ReplyCard(props: Props) {
 						</ButtonGroup>
 					) : (
 						<VStack onSubmit={onSubmit} as="form" w="full" alignItems="flex-start">
-							<Textarea resize="none" {...register('reply')} />
+							<Textarea
+								resize="none"
+								{...register('reply', { required: true, pattern: /\S/ })}
+							/>
 							<ButtonGroup>
 								<Button type="submit" colorScheme="whatsapp" disabled={isSubmitting}>
 									Submit

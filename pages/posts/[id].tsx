@@ -39,7 +39,7 @@ function Index({ post }: Props) {
 		register,
 		handleSubmit,
 		watch,
-		resetField,
+		reset,
 		formState: { isSubmitting, isSubmitSuccessful },
 	} = useForm<FormData>();
 	const [replies, setReplies] = useState<Reply[] | null>(null);
@@ -60,8 +60,10 @@ function Index({ post }: Props) {
 	}, [fetchReplies]);
 
 	useEffect(() => {
-		resetField('reply');
-	}, [isSubmitSuccessful, resetField]);
+		reset({
+			reply: '',
+		});
+	}, [isSubmitSuccessful, reset]);
 
 	const onSubmit = handleSubmit(async (formData) => {
 		if (auth.user) {
@@ -82,6 +84,8 @@ function Index({ post }: Props) {
 				});
 				fetchReplies();
 			}
+		} else {
+			toast.error('You must be logged in to comment');
 		}
 	});
 
@@ -114,7 +118,10 @@ function Index({ post }: Props) {
 						mt="1"
 					/>
 					<VStack w="full" alignItems="flex-start">
-						<Textarea resize="none" {...register('reply')} />
+						<Textarea
+							resize="none"
+							{...register('reply', { required: true, pattern: /\S/ })}
+						/>
 						{!!watch('reply') && (
 							<Button disabled={isSubmitting} type="submit">
 								Submit

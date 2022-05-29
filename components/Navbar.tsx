@@ -9,12 +9,13 @@ import {
 	Avatar,
 	MenuList,
 	MenuItem,
-	Box,
 	Flex,
 	Spacer,
+	Text,
+	MenuDivider,
 } from '@chakra-ui/react';
 import { AiOutlinePlus, AiOutlineSearch } from 'react-icons/ai';
-import { FiLogOut } from 'react-icons/fi';
+import { FiLogOut, FiMenu } from 'react-icons/fi';
 
 import { useRouter } from 'next/router';
 
@@ -26,6 +27,7 @@ function Navbar(): JSX.Element {
 
 	const gotoHome = () => router.push('/');
 	const gotoEnter = () => router.push('/enter');
+	const gotoNew = () => router.push('/new');
 
 	return (
 		<HStack
@@ -44,17 +46,25 @@ function Navbar(): JSX.Element {
 			{auth.user ? (
 				<Flex alignItems="center">
 					<ButtonGroup colorScheme="whatsapp" spacing="1">
-						<IconButton aria-label="Add post" icon={<AiOutlineSearch />} />
-						<IconButton aria-label="Add post" icon={<AiOutlinePlus />} />
+						<IconButton aria-label="Search post" icon={<AiOutlineSearch />} />
+						<IconButton
+							onClick={gotoNew}
+							aria-label="Add post"
+							icon={<AiOutlinePlus />}
+						/>
 					</ButtonGroup>
 					<Spacer w="2" />
 					<Menu>
-						<MenuButton
-							as={Avatar}
-							name={auth.user.user_metadata.name}
-							src={auth.user.user_metadata.avatar_url}
-						/>
+						<MenuButton as={IconButton} aria-label="Options" icon={<FiMenu />} />
 						<MenuList>
+							<HStack p="2">
+								<Avatar
+									name={auth.user.user_metadata.name}
+									src={auth.user.user_metadata.avatar_url}
+								/>
+								<Text>{auth.user.user_metadata.name}</Text>
+							</HStack>
+							<MenuDivider />
 							<MenuItem onClick={() => auth.signOut()} icon={<FiLogOut />}>
 								Logout
 							</MenuItem>
