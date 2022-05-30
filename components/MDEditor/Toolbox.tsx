@@ -11,8 +11,10 @@ import { RiDoubleQuotesL, RiHeading } from 'react-icons/ri';
 import { BsCode, BsCodeSquare, BsCardImage } from 'react-icons/bs';
 import { ButtonGroup, IconButton, Input, Tooltip } from '@chakra-ui/react';
 import { v4 as uuid } from 'uuid';
+import { toast } from 'react-hot-toast';
 
 import supabase from '../../supabase';
+import format from './utils/format';
 
 type Props = {
 	target: React.RefObject<HTMLTextAreaElement>;
@@ -26,17 +28,28 @@ function Toolbox({ target }: Props) {
 				.from('images')
 				.upload(`${uuid()}`, file);
 
-			if (error) throw error;
-			// if (data) {
-			//   insertFormat(
-			//     '![Image description](',
-			//     `https://gcvuinboilazvaioqsxy.supabase.co/storage/v1/object/public/${data.Key}`,
-			//     ')'
-			//   )
-			// }
+			if (error) toast.error(error.message);
+			if (data) {
+				format(
+					target.current,
+					'![Image description](',
+					`https://gcvuinboilazvaioqsxy.supabase.co/storage/v1/object/public/${data.Key}`,
+					')'
+				);
+			}
 			e.target.value = '';
 		}
 	};
+
+	const tools = (() => {
+		return {
+			bold: () => format(target.current, '**'),
+			italic: () => format(target.current, '__'),
+			link: () => format(target.current, '[](', 'url', ')'),
+			underline: () => format(target.current, '<u>', ' ', '</u>'),
+			strikethrough: () => format(target.current, '~~'),
+		};
+	})();
 
 	return (
 		<ButtonGroup
@@ -55,13 +68,25 @@ function Toolbox({ target }: Props) {
 				display="none"
 			/>
 			<Tooltip label="Bold" placement="bottom" hasArrow>
-				<IconButton aria-label="bold" icon={<AiOutlineBold />} />
+				<IconButton
+					onClick={tools.bold}
+					aria-label="bold"
+					icon={<AiOutlineBold />}
+				/>
 			</Tooltip>
 			<Tooltip label="Italic" placement="bottom" hasArrow>
-				<IconButton aria-label="italic" icon={<AiOutlineItalic />} />
+				<IconButton
+					onClick={tools.italic}
+					aria-label="italic"
+					icon={<AiOutlineItalic />}
+				/>
 			</Tooltip>
 			<Tooltip label="Link" placement="bottom" hasArrow>
-				<IconButton aria-label="link" icon={<AiOutlineLink />} />
+				<IconButton
+					onClick={tools.link}
+					aria-label="link"
+					icon={<AiOutlineLink />}
+				/>
 			</Tooltip>
 			<Tooltip label="Ordered list" placement="bottom" hasArrow>
 				<IconButton
@@ -98,10 +123,18 @@ function Toolbox({ target }: Props) {
 				/>
 			</Tooltip>
 			<Tooltip label="Underline" placement="bottom" hasArrow>
-				<IconButton aria-label="underline" icon={<AiOutlineUnderline />} />
+				<IconButton
+					onClick={tools.underline}
+					aria-label="underline"
+					icon={<AiOutlineUnderline />}
+				/>
 			</Tooltip>
 			<Tooltip label="Strike through" placement="bottom" hasArrow>
-				<IconButton aria-label="strike through" icon={<AiOutlineStrikethrough />} />
+				<IconButton
+					onClick={tools.strikethrough}
+					aria-label="strike through"
+					icon={<AiOutlineStrikethrough />}
+				/>
 			</Tooltip>
 		</ButtonGroup>
 	);

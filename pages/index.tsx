@@ -21,7 +21,7 @@ const Home: NextPage = () => {
 			if (error) throw error;
 			setPosts(data);
 		})();
-	}, []);
+	});
 
 	return (
 		<Layout>
