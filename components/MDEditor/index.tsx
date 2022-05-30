@@ -7,9 +7,11 @@ import Body from './Body';
 
 type Props = {
 	cb: (title: string, body: string) => Promise<void>;
+	title?: string;
+	body?: string;
 };
 
-function Index({ cb }: Props) {
+function Index({ cb, title, body }: Props) {
 	const bodyRef = useRef<HTMLTextAreaElement>(null);
 
 	const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -23,9 +25,9 @@ function Index({ cb }: Props) {
 
 	return (
 		<chakra.form onSubmit={onSubmit} as="form" bg="white" p="2">
-			<Title />
+			<Title title={title} />
 			<Toolbox target={bodyRef} />
-			<Body ref={bodyRef} target={bodyRef} />
+			<Body ref={bodyRef} target={bodyRef} body={body} />
 			<Button type="submit" my="2" colorScheme="whatsapp">
 				Submit
 			</Button>

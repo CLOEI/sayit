@@ -13,7 +13,7 @@ function New() {
 	const auth = useAuth();
 
 	if (!auth.user) {
-		return router.replace('/enter');
+		router.replace('/enter');
 	}
 
 	const onSubmit = async (title: string, body: string) => {
@@ -38,6 +38,7 @@ function New() {
 			router.push('/enter');
 		}
 	};
+
 	return (
 		<Layout>
 			<Head>

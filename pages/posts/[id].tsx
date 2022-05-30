@@ -1,3 +1,4 @@
+import type { PostgrestError } from '@supabase/supabase-js';
 import type { GetServerSideProps } from 'next';
 
 import {
@@ -17,6 +18,7 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import TimeAgo from 'react-timeago';
 
+import Error from 'next/error';
 import Head from 'next/head';
 
 import { useAuth } from '../../hooks/useAuth';
@@ -28,13 +30,23 @@ import ReplyCard from '../../components/ReplyCard';
 
 type Props = {
 	post: Post;
+	error: PostgrestError | null;
 };
 
 type FormData = {
 	reply: string;
 };
 
-function Index({ post }: Props) {
+// Why i do this? because there's a rule where hooks can't be called conditionally.
+function Index({ post, error }: Props) {
+	return error ? (
+		<Error statusCode={404} title="Post not found" />
+	) : (
+		<Post post={post} />
+	);
+}
+
+const Post = ({ post }: { post: Post }) => {
 	const {
 		register,
 		handleSubmit,
@@ -145,20 +157,19 @@ function Index({ post }: Props) {
 			</Box>
 		</Layout>
 	);
-}
+};
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
-	const query = ctx.query;
+	const { id } = ctx.query;
 	const { data, error } = await supabase
-		.rpc('get_posts')
-		.eq('id', query.id)
+		.rpc<Post>('get_posts')
+		.eq('id', id!.toString())
 		.single();
-
-	if (error) throw error;
 
 	return {
 		props: {
 			post: data,
+			error,
 		},
 	};
 };

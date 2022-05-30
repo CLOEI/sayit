@@ -6,9 +6,10 @@ import format from './utils/format';
 
 type Props = {
 	target: React.RefObject<HTMLTextAreaElement>;
+	body?: string;
 };
 
-const Body = forwardRef<HTMLTextAreaElement, Props>(({ target }, ref) => {
+const Body = forwardRef<HTMLTextAreaElement, Props>(({ target, body }, ref) => {
 	const bodyKeyHandler = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
 		if (e.ctrlKey) {
 			switch (e.key) {
@@ -42,6 +43,7 @@ const Body = forwardRef<HTMLTextAreaElement, Props>(({ target }, ref) => {
 			resize="none"
 			ref={ref}
 			placeholder="Write content body here..."
+			defaultValue={body}
 			name="body"
 		/>
 	);
