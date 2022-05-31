@@ -13,21 +13,53 @@ import {
 	Spacer,
 	Text,
 	MenuDivider,
+	Modal,
+	ModalOverlay,
+	ModalContent,
+	ModalHeader,
+	ModalBody,
+	useDisclosure,
+	InputGroup,
+	InputLeftElement,
+	Input,
 } from '@chakra-ui/react';
 import { AiOutlinePlus, AiOutlineSearch } from 'react-icons/ai';
+import { useState } from 'react';
 import { FiLogOut, FiMenu } from 'react-icons/fi';
 
 import { useRouter } from 'next/router';
 
 import { useAuth } from '../hooks/useAuth';
+import debounce from '../utils/debounce';
+import supabase from '../supabase';
+import PostCard from './PostCard';
 
 function Navbar(): JSX.Element {
+	const { isOpen, onOpen, onClose } = useDisclosure();
+	const [searchData, setSearchData] = useState<Post[] | null>([]);
 	const router = useRouter();
 	const auth = useAuth();
 
 	const gotoHome = () => router.push('/');
 	const gotoEnter = () => router.push('/enter');
 	const gotoNew = () => router.push('/new');
+
+	const fetchAndSetSearchData = async (text: string) => {
+		const { data, error } = await supabase
+			.rpc<Post>('get_posts')
+			.select('*')
+			.textSearch('title', text);
+
+		if (error) throw error;
+		setSearchData(data);
+	};
+
+	const onSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+		fetchAndSetSearchData(e.target.value);
+	};
+
+	const debouncedSearch = debounce(onSearchChange, 500);
+	console.log('re-render');
 
 	return (
 		<HStack
@@ -46,7 +78,11 @@ function Navbar(): JSX.Element {
 			{auth.user ? (
 				<Flex alignItems="center">
 					<ButtonGroup colorScheme="whatsapp" spacing="1">
-						<IconButton aria-label="Search post" icon={<AiOutlineSearch />} />
+						<IconButton
+							onClick={onOpen}
+							aria-label="Search post"
+							icon={<AiOutlineSearch />}
+						/>
 						<IconButton
 							onClick={gotoNew}
 							aria-label="Add post"
@@ -74,6 +110,36 @@ function Navbar(): JSX.Element {
 			) : (
 				<Button onClick={gotoEnter}>Create account</Button>
 			)}
+			<Modal isOpen={isOpen} onClose={onClose} scrollBehavior="inside">
+				<ModalOverlay />
+				<ModalContent>
+					<ModalHeader p={0}>
+						<InputGroup variant="unstyled">
+							<InputLeftElement
+								pointerEvents="none"
+								height="full"
+								pos="absolute"
+								left="4"
+							>
+								<AiOutlineSearch size={25} />
+							</InputLeftElement>
+							<Input
+								onChange={debouncedSearch}
+								placeholder="Search for posts"
+								height="16"
+								pl="16"
+							/>
+						</InputGroup>
+					</ModalHeader>
+					{searchData && searchData.length > 0 && (
+						<ModalBody>
+							{searchData.map((post) => {
+								return <PostCard key={post.id} {...post} />;
+							})}
+						</ModalBody>
+					)}
+				</ModalContent>
+			</Modal>
 		</HStack>
 	);
 }

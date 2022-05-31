@@ -13,15 +13,17 @@ const Home: NextPage = () => {
 	const [posts, setPosts] = useState<Post[] | null>(null);
 
 	useEffect(() => {
-		(async () => {
-			const { data, error } = await supabase
-				.rpc<Post>('get_posts')
-				.order('id', { ascending: false });
+		fetchAndSetPosts();
+	}, []);
 
-			if (error) throw error;
-			setPosts(data);
-		})();
-	});
+	const fetchAndSetPosts = async () => {
+		const { data, error } = await supabase
+			.rpc<Post>('get_posts')
+			.order('id', { ascending: false });
+
+		if (error) throw error;
+		setPosts(data);
+	};
 
 	return (
 		<Layout>
