@@ -106,7 +106,7 @@ const Post = ({ post }: { post: Post }) => {
 			<Head>
 				<title>{post.title}</title>
 			</Head>
-			<Box bg="white" p="3">
+			<Box bg="white" p="3" maxW="5xl" mx="auto" mt={[0, 0, 0, '2']}>
 				<PostHeader {...post} />
 				<Box my="2">
 					<Heading as="h1">{post.title}</Heading>

@@ -30,7 +30,7 @@ const Home: NextPage = () => {
 			<Head>
 				<title>Sayit</title>
 			</Head>
-			<VStack spacing="2" mt="2">
+			<VStack spacing="2" mt="2" maxW="5xl" mx="auto">
 				{posts &&
 					posts.map((post) => {
 						return <PostCard key={post.id} refresh={fetchAndSetPosts} {...post} />;
