@@ -7,7 +7,11 @@ import Link from 'next/link';
 import PostHeader from './PostHeader';
 import { Button, ButtonGroup, HStack, Text, VStack } from '@chakra-ui/react';
 
-function PostCard(props: Post) {
+interface Props extends Post {
+	refresh?: () => Promise<void>;
+}
+
+function PostCard(props: Props) {
 	const router = useRouter();
 	const wpm = 200; // normal human reading speed
 	const estimated = props.body.match(/[a-zA-Z0-9]/g)!.length / wpm;

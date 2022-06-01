@@ -59,7 +59,6 @@ function Navbar(): JSX.Element {
 	};
 
 	const debouncedSearch = debounce(onSearchChange, 500);
-	console.log('re-render');
 
 	return (
 		<HStack

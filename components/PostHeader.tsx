@@ -27,7 +27,18 @@ import { useRouter } from 'next/router';
 import { useAuth } from '../hooks/useAuth';
 import supabase from '../supabase';
 
-function PostHeader({ avatar_url, name, id, created_at, user_id }: Post) {
+interface Props extends Post {
+	refresh?: () => Promise<void>;
+}
+
+function PostHeader({
+	avatar_url,
+	name,
+	id,
+	created_at,
+	user_id,
+	refresh,
+}: Props) {
 	const { isOpen, onOpen, onClose } = useDisclosure();
 	const cancelRef = useRef(null);
 	const router = useRouter();
@@ -35,8 +46,16 @@ function PostHeader({ avatar_url, name, id, created_at, user_id }: Post) {
 
 	const deletePost = async () => {
 		if (auth.user?.id === user_id) {
+			const toastId = toast.loading('Deleting post...');
 			const { error } = await supabase.from('posts').delete().eq('id', id);
-			if (error) toast.error('Error deleting post');
+			if (error)
+				toast.error('Error deleting post', {
+					id: toastId,
+				});
+			toast.success('Successfully deleted the post', {
+				id: toastId,
+			});
+			if (refresh) refresh();
 			onClose();
 			router.push('/');
 		} else {
