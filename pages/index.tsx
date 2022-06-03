@@ -8,6 +8,7 @@ import Head from 'next/head';
 
 import PostCard from '../components/PostCard';
 import supabase from '../supabase';
+import PostCardSkeleton from '../components/PostCardSkeleton';
 
 const Home: NextPage = () => {
 	const [posts, setPosts] = useState<Post[] | null>(null);
@@ -31,10 +32,16 @@ const Home: NextPage = () => {
 				<title>Sayit</title>
 			</Head>
 			<VStack spacing="2" mt="2" maxW="5xl" mx="auto">
-				{posts &&
+				{posts ? (
 					posts.map((post) => {
 						return <PostCard key={post.id} refresh={fetchAndSetPosts} {...post} />;
-					})}
+					})
+				) : (
+					<>
+						<PostCardSkeleton />
+						<PostCardSkeleton />
+					</>
+				)}
 			</VStack>
 		</Layout>
 	);

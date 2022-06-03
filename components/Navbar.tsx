@@ -3,7 +3,6 @@ import {
 	HStack,
 	Heading,
 	IconButton,
-	ButtonGroup,
 	Menu,
 	MenuButton,
 	Avatar,
@@ -74,41 +73,43 @@ function Navbar(): JSX.Element {
 			<Heading onClick={gotoHome} as="h1" cursor="pointer">
 				Sayit
 			</Heading>
-			{auth.user ? (
-				<Flex alignItems="center">
-					<ButtonGroup colorScheme="whatsapp" spacing="1">
-						<IconButton
-							onClick={onOpen}
-							aria-label="Search post"
-							icon={<AiOutlineSearch />}
-						/>
+			<HStack spacing="1">
+				<IconButton
+					onClick={onOpen}
+					aria-label="Search post"
+					icon={<AiOutlineSearch />}
+					variant="outline"
+				/>
+				{auth.user ? (
+					<Flex alignItems="center">
 						<IconButton
 							onClick={gotoNew}
 							aria-label="Add post"
 							icon={<AiOutlinePlus />}
+							variant="outline"
 						/>
-					</ButtonGroup>
-					<Spacer w="2" />
-					<Menu>
-						<MenuButton as={IconButton} aria-label="Options" icon={<FiMenu />} />
-						<MenuList>
-							<HStack p="2">
-								<Avatar
-									name={auth.user.user_metadata.name}
-									src={auth.user.user_metadata.avatar_url}
-								/>
-								<Text>{auth.user.user_metadata.name}</Text>
-							</HStack>
-							<MenuDivider />
-							<MenuItem onClick={() => auth.signOut()} icon={<FiLogOut />}>
-								Logout
-							</MenuItem>
-						</MenuList>
-					</Menu>
-				</Flex>
-			) : (
-				<Button onClick={gotoEnter}>Create account</Button>
-			)}
+						<Spacer w="2" />
+						<Menu>
+							<MenuButton as={IconButton} aria-label="Options" icon={<FiMenu />} />
+							<MenuList>
+								<HStack p="2">
+									<Avatar
+										name={auth.user.user_metadata.name}
+										src={auth.user.user_metadata.avatar_url}
+									/>
+									<Text>{auth.user.user_metadata.name}</Text>
+								</HStack>
+								<MenuDivider />
+								<MenuItem onClick={() => auth.signOut()} icon={<FiLogOut />}>
+									Logout
+								</MenuItem>
+							</MenuList>
+						</Menu>
+					</Flex>
+				) : (
+					<Button onClick={gotoEnter}>Create account</Button>
+				)}
+			</HStack>
 			<Modal isOpen={isOpen} onClose={onClose} scrollBehavior="inside">
 				<ModalOverlay />
 				<ModalContent>
