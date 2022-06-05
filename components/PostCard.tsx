@@ -17,7 +17,7 @@ function PostCard(props: Props) {
 	const estimated = props.body.match(/[a-zA-Z0-9]/g)!.length / wpm;
 	const minutes = Math.round(estimated);
 
-	const gotoComments = () => router.push(`/post/${props.id}#comments`);
+	const gotoComments = () => router.push(`/posts/${props.id}#comments`);
 
 	return (
 		<VStack

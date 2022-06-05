@@ -141,7 +141,7 @@ const Post = ({ post }: { post: Post }) => {
 						)}
 					</VStack>
 				</HStack>
-				<VStack mt="4" spacing="1">
+				<VStack mt="4" spacing="1" id="comments">
 					{replies &&
 						replies.map((reply) => {
 							return (
